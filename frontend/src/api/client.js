@@ -1,4 +1,15 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+function resolveApiBaseUrl() {
+  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
+
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  // In production on Vercel we proxy /api to the Render backend with vercel.json.
+  return "/api";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export async function apiRequest(path, { method = "GET", body, token } = {}) {
   let response;
@@ -14,17 +25,26 @@ export async function apiRequest(path, { method = "GET", body, token } = {}) {
     });
   } catch {
     throw new Error(
-      "Unable to reach the local API. Start the app with `npm start` from the project root, or use `npm start` inside `frontend` so the backend starts too."
+      `Unable to reach the API at ${API_BASE_URL}. If this is the live site, the backend may still be waking up on Render or the frontend rewrite may not be deployed yet.`
     );
   }
 
-  const data = await response.json();
+  const raw = await response.text();
+  const data = raw ? safeParseJson(raw) : null;
 
   if (!response.ok) {
-    throw new Error(data.error || "Request failed.");
+    throw new Error(data?.error || raw || `Request failed with status ${response.status}.`);
   }
 
   return data;
+}
+
+function safeParseJson(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
 }
 
 export const api = {

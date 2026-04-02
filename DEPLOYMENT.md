@@ -59,13 +59,16 @@ https://summit-prep-api.example.com
 1. Import the GitHub repository into Vercel.
 2. Set the root directory to `frontend`.
 3. Let Vercel detect the framework as Vite.
-4. Add this environment variable:
+4. The project includes a `vercel.json` rewrite that forwards `/api/*` requests to `https://summit-prep.onrender.com/api/*`.
+5. If you keep using that Render URL, you do not need `VITE_API_BASE_URL` on Vercel.
+6. If your backend URL changes, update `frontend/vercel.json` and redeploy.
+7. Optionally add this environment variable if you prefer explicit frontend configuration:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-url.example.com/api
 ```
 
-5. Deploy.
+8. Deploy.
 
 ## 4. Add your custom domain
 
