@@ -9,13 +9,32 @@ import questionsRoutes from "./routes/questions.routes.js";
 import testsRoutes from "./routes/tests.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
+function originMatchesPattern(origin, pattern) {
+  if (pattern === "*") {
+    return true;
+  }
+
+  if (!pattern.includes("*")) {
+    return origin === pattern;
+  }
+
+  const escapedPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+  const regex = new RegExp(`^${escapedPattern}$`);
+  return regex.test(origin);
+}
+
 export function createApp() {
   const app = express();
 
   app.use(
     cors({
       origin(origin, callback) {
-        if (!origin || config.corsOrigins.includes(origin)) {
+        const normalizedOrigin = origin?.replace(/\/$/, "");
+        const isAllowed =
+          !normalizedOrigin ||
+          config.corsOrigins.some((pattern) => originMatchesPattern(normalizedOrigin, pattern));
+
+        if (isAllowed) {
           callback(null, true);
           return;
         }

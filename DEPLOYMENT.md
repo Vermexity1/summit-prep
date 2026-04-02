@@ -33,7 +33,7 @@ Set these backend environment variables:
 PORT=4000
 DATABASE_PROVIDER=mongodb
 MONGODB_URI=your_atlas_connection_string
-CORS_ORIGINS=https://your-project.vercel.app,https://yourdomain.com,https://www.yourdomain.com
+CORS_ORIGINS=https://*.vercel.app,https://yourdomain.com,https://www.yourdomain.com
 AUTH_PROVIDER=local
 SESSION_SECRET=replace-this-with-a-long-random-secret
 AI_MODE=local
@@ -73,7 +73,7 @@ In Vercel, add your domain and follow the DNS instructions.
 
 Then go back to your backend host and make sure `CORS_ORIGINS` includes:
 
-- your `vercel.app` URL
+- your `vercel.app` URL or `https://*.vercel.app`
 - your final custom domain
 - the `www` version if you use it
 

@@ -9,6 +9,10 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "../..");
 const defaultCorsOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
 
+function normalizeOrigin(origin) {
+  return origin.trim().replace(/\/$/, "");
+}
+
 function parseCorsOrigins(value) {
   if (!value) {
     return defaultCorsOrigins;
@@ -16,7 +20,7 @@ function parseCorsOrigins(value) {
 
   return value
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin) => normalizeOrigin(origin))
     .filter(Boolean);
 }
 
