@@ -2,10 +2,21 @@ import { createApp } from "./app.js";
 import { config } from "./config/env.js";
 import { readStore } from "./repositories/fileStore.js";
 import { connectMongo } from "./repositories/mongo.js";
+import { migrateFileStoreToMongo } from "./services/migration.service.js";
 
 async function start() {
   await readStore();
-  await connectMongo();
+  const mongoConnected = await connectMongo();
+
+  if (mongoConnected) {
+    const migration = await migrateFileStoreToMongo();
+
+    if (migration.migrated) {
+      console.log(
+        `Mongo sync complete: ${migration.users} users, ${migration.sessions} sessions, ${migration.practiceAttempts} practice attempts.`
+      );
+    }
+  }
 
   const app = createApp();
   const server = app.listen(config.port, () => {
