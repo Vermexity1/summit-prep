@@ -7,7 +7,11 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "../..");
-const defaultCorsOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const defaultCorsOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://*.vercel.app"
+];
 
 function normalizeOrigin(origin) {
   return origin.trim().replace(/\/$/, "");
