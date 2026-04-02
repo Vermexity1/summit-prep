@@ -1,12 +1,22 @@
 function resolveApiBaseUrl() {
   const configured = import.meta.env.VITE_API_BASE_URL?.trim();
+  const isBrowser = typeof window !== "undefined";
+  const host = isBrowser ? window.location.hostname : "";
+  const isLocalhost = host === "localhost" || host === "127.0.0.1";
+  const isVercelHost = host.endsWith(".vercel.app");
+
+  // On Vercel, prefer the same-origin /api rewrite so the browser never needs direct CORS calls
+  // to the Render backend.
+  if (isVercelHost) {
+    return "/api";
+  }
 
   if (configured) {
     return configured.replace(/\/$/, "");
   }
 
   // In production on Vercel we proxy /api to the Render backend with vercel.json.
-  return "/api";
+  return isLocalhost ? "/api" : "/api";
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
