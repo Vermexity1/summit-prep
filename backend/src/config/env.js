@@ -35,6 +35,7 @@ export const config = {
   dataFile: path.resolve(projectRoot, process.env.DATA_FILE || "./src/data/app-data.json"),
   databaseProvider: process.env.DATABASE_PROVIDER || "file",
   mongoUri: process.env.MONGODB_URI || "",
+  mongoDbName: process.env.MONGODB_DB_NAME || "summitprep",
   aiMode: process.env.AI_MODE || "local",
   openAiApiKey: process.env.OPENAI_API_KEY || "",
   openAiModel: process.env.OPENAI_MODEL || "gpt-4.1-mini",

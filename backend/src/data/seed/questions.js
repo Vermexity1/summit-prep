@@ -64,6 +64,86 @@ const readingPassages = [
     vocabMeaning: "everyday",
     purpose: "to show how a local preservation project grew in historical importance",
     tone: "respectful and informative"
+  },
+  {
+    id: "reef",
+    title: "Artificial Reefs",
+    text:
+      "Marine biologist Amina Cole studied an offshore site where engineers had placed recycled concrete modules on the seafloor. At first, the structures appeared bare and unfinished, but within months algae, shellfish, and small fish had begun to cluster around them. Cole notes that the project did not recreate a natural reef overnight; instead, it created conditions in which a reef community could slowly assemble. That distinction, she argues, matters when people evaluate restoration efforts.",
+    centralIdea:
+      "The concrete modules helped start ecological recovery by creating conditions that supported gradual reef growth.",
+    inference:
+      "Cole believes restoration projects should be judged by whether they foster long-term ecological processes.",
+    evidence:
+      "it created conditions in which a reef community could slowly assemble",
+    vocabWord: "assemble",
+    vocabMeaning: "come together",
+    purpose: "to clarify what a successful environmental restoration project actually accomplishes",
+    tone: "careful and analytical"
+  },
+  {
+    id: "translation",
+    title: "Translating Poetry",
+    text:
+      "Translator Mei Alvarez describes poetry translation as a choice between competing loyalties. A translator may preserve a poem's exact imagery, for example, yet lose the rhythm that gave the original its emotional force. Alvarez therefore aims less for literal duplication than for equivalent effect. If a translated line leaves readers with the same sense of surprise, tension, or calm that the original produced, she considers the line successful even when its wording must change.",
+    centralIdea:
+      "Alvarez values recreating a poem's effect over preserving every detail of its wording.",
+    inference:
+      "Alvarez would likely accept changes in phrasing when they better preserve the poem's emotional impact.",
+    evidence:
+      "she considers the line successful even when its wording must change",
+    vocabWord: "equivalent",
+    vocabMeaning: "roughly equal",
+    purpose: "to explain the reasoning behind a translator's approach to poetry",
+    tone: "reflective and nuanced"
+  },
+  {
+    id: "market",
+    title: "Night Market",
+    text:
+      "When the Riverside Night Market first opened, city officials promoted it mainly as a way to support small food businesses. Yet observers soon noticed another effect: artisans who sold ceramics, prints, and woven goods began using the market as a place to test new ideas before investing in larger storefronts. Because vendors could watch which items attracted attention and ask customers questions directly, the market became not just a venue for sales but a low-risk laboratory for design.",
+    centralIdea:
+      "The night market evolved into a testing ground where artisans could refine products before expanding.",
+    inference:
+      "Direct feedback from customers made the market especially useful to small creative businesses.",
+    evidence:
+      "the market became not just a venue for sales but a low-risk laboratory for design",
+    vocabWord: "venue",
+    vocabMeaning: "place",
+    purpose: "to show how a business initiative produced an additional entrepreneurial benefit",
+    tone: "observant and explanatory"
+  },
+  {
+    id: "glacier",
+    title: "Glacier Records",
+    text:
+      "Climate scientists sometimes analyze air bubbles trapped in ancient ice because those bubbles preserve tiny samples of earlier atmospheres. The method is powerful, but researcher Emil Novak cautions that the ice itself does not 'speak' without interpretation. Measurements must be compared across depths, calibrated against known events, and evaluated alongside other climate records. For Novak, the strength of ice-core evidence lies not in its simplicity but in how well it can be integrated with multiple independent sources.",
+    centralIdea:
+      "Ice-core evidence is most persuasive when scientists interpret it alongside other forms of climate data.",
+    inference:
+      "Novak is skeptical of treating a single scientific record as complete on its own.",
+    evidence:
+      "the strength of ice-core evidence lies not in its simplicity but in how well it can be integrated with multiple independent sources",
+    vocabWord: "calibrated",
+    vocabMeaning: "adjusted for accuracy",
+    purpose: "to explain both the value and the limits of a scientific method",
+    tone: "precise and measured"
+  },
+  {
+    id: "observatory",
+    title: "Public Observatory",
+    text:
+      "The Hillview Observatory once opened only a few nights each month, largely because its staff assumed that public interest in astronomy would be sporadic. After the observatory began pairing telescope sessions with short talks about current space missions, attendance rose sharply and stayed high. Staff members concluded that visitors were not simply seeking a glimpse of the night sky; they also wanted a framework for understanding what they saw. The talks, in other words, turned observation into participation.",
+    centralIdea:
+      "Attendance increased when the observatory combined observation with explanation.",
+    inference:
+      "Visitors valued context as much as access to the telescope itself.",
+    evidence:
+      "they also wanted a framework for understanding what they saw",
+    vocabWord: "sporadic",
+    vocabMeaning: "irregular",
+    purpose: "to describe how an institution learned what its audience actually wanted",
+    tone: "insightful and informative"
   }
 ];
 
@@ -85,6 +165,33 @@ const pairedPassages = [
       "Business owner Carla Reyes supports bike lanes only when delivery access is preserved, arguing that design details determine whether a project strengthens or disrupts a neighborhood.",
     sharedPoint: "Both writers support bike infrastructure in principle.",
     disagreement: "Kim highlights broad transportation benefits, while Reyes focuses on implementation details."
+  },
+  {
+    id: "museums",
+    passageA:
+      "Curator Devin Shah argues that museums should rotate more objects from storage into public view, since broad access helps visitors understand the full range of a collection.",
+    passageB:
+      "Conservator Elena Park agrees that access matters, but she warns that frequent rotation can expose fragile works to unnecessary handling and light.",
+    sharedPoint: "Both authors think museum collections should be used in ways that benefit the public.",
+    disagreement: "Shah prioritizes access, while Park prioritizes preservation limits."
+  },
+  {
+    id: "remote-work",
+    passageA:
+      "Economist Nora Fields contends that remote work can strengthen regional economies by allowing employees to remain in smaller cities while working for larger firms.",
+    passageB:
+      "Urban planner Isaac Moreno notes that remote work may redistribute opportunity, but he argues that cities still provide dense networks of mentorship and collaboration that are difficult to reproduce online.",
+    sharedPoint: "Both writers see remote work as economically significant.",
+    disagreement: "Fields emphasizes geographic flexibility, whereas Moreno emphasizes the continuing value of cities."
+  },
+  {
+    id: "school-lunch",
+    passageA:
+      "Nutrition researcher Dana Brooks supports adding more locally sourced produce to school lunches because it can improve freshness and introduce students to seasonal foods.",
+    passageB:
+      "District operations manager Luis Ortega supports the idea in theory, but he argues that schools need predictable supply and pricing before expanding such programs.",
+    sharedPoint: "Both writers are open to improving school lunches with better ingredients.",
+    disagreement: "Brooks focuses on nutritional and educational benefits, while Ortega focuses on logistical reliability."
   }
 ];
 
@@ -114,8 +221,61 @@ const dataInterpretationSets = [
     prompt: "Which conclusion is best supported by the data in the table?",
     correct:
       "Plot D produced the highest yield, while Plots B and C produced the same amount."
+  },
+  {
+    id: "festival",
+    tableTitle: "Arts Festival Ticket Sales",
+    rows: [
+      ["Friday", 320],
+      ["Saturday", 470],
+      ["Sunday", 410]
+    ],
+    prompt: "Which statement is best supported by the data in the table?",
+    correct:
+      "Ticket sales were highest on Saturday and lower on Sunday than on Saturday."
+  },
+  {
+    id: "solar",
+    tableTitle: "Solar Output by Month (kWh)",
+    rows: [
+      ["May", 1180],
+      ["June", 1290],
+      ["July", 1310],
+      ["August", 1240]
+    ],
+    prompt: "Which conclusion is best supported by the data in the table?",
+    correct:
+      "Output increased from May through July before decreasing in August."
+  },
+  {
+    id: "commute",
+    tableTitle: "Average Commute Time by Route (minutes)",
+    rows: [
+      ["Route A", 34],
+      ["Route B", 29],
+      ["Route C", 34],
+      ["Route D", 41]
+    ],
+    prompt: "Which statement is best supported by the data in the table?",
+    correct:
+      "Routes A and C had the same average commute time, and Route D had the longest."
+  },
+  {
+    id: "workshop",
+    tableTitle: "Student Workshop Enrollment",
+    rows: [
+      ["Writing", 28],
+      ["Robotics", 35],
+      ["Debate", 22],
+      ["Design", 35]
+    ],
+    prompt: "Which conclusion is best supported by the data in the table?",
+    correct:
+      "Robotics and Design were tied for the highest enrollment."
   }
 ];
+
+const QUESTION_BANK_VARIANTS_PER_DIFFICULTY = 25;
 
 function createBaseQuestion(template, details) {
   return {
@@ -1420,13 +1580,12 @@ function cloneQuestion(question) {
 function buildQuestionBank() {
   const examTypes = ["SAT", "PSAT"];
   const difficulties = ["easy", "medium", "hard"];
-  const variantsPerDifficulty = 12;
   const bank = [];
 
   examTypes.forEach((examType) => {
     templates.forEach((template) => {
       difficulties.forEach((difficulty) => {
-        for (let index = 0; index < variantsPerDifficulty; index += 1) {
+        for (let index = 0; index < QUESTION_BANK_VARIANTS_PER_DIFFICULTY; index += 1) {
           bank.push(
             template.build({
               examType,

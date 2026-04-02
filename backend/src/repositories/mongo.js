@@ -102,9 +102,13 @@ export async function connectMongo() {
   }
 
   try {
-    await mongoose.connect(config.mongoUri);
+    await mongoose.connect(config.mongoUri, {
+      dbName: config.mongoDbName
+    });
     connected = true;
-    console.log("MongoDB connected");
+    console.log(
+      `MongoDB connected to database "${mongoose.connection.name}" on host "${mongoose.connection.host}"`
+    );
     return true;
   } catch (error) {
     console.warn("MongoDB unavailable, falling back to file store.");
@@ -116,4 +120,11 @@ export async function connectMongo() {
 
 export function isMongoConnected() {
   return connected;
+}
+
+export function getMongoConnectionInfo() {
+  return {
+    host: mongoose.connection.host || "",
+    databaseName: mongoose.connection.name || config.mongoDbName
+  };
 }

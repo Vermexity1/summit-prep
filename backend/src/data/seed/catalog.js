@@ -76,7 +76,7 @@ export const TEST_YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
 export const OFFICIAL_RESOURCES = {
   note:
-    "Summit Prep keeps its built-in questions original. For genuine College Board-released material, use the official resources below.",
+    "Summit Prep keeps its built-in questions original and exam-aligned rather than reprinting copyrighted College Board questions. For genuine College Board-released material, use the official resources below.",
   items: [
     {
       id: "eqb",

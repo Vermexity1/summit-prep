@@ -65,6 +65,7 @@ Open `C:\Users\prave\Downloads\SATCodex\backend\.env` and set:
 ```env
 DATABASE_PROVIDER=mongodb
 MONGODB_URI=your_full_atlas_connection_string
+MONGODB_DB_NAME=summitprep
 ```
 
 Leave the other values as they are unless you want to customize them.
