@@ -8,6 +8,7 @@ import metaRoutes from "./routes/meta.routes.js";
 import questionsRoutes from "./routes/questions.routes.js";
 import testsRoutes from "./routes/tests.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { isMongoConnected } from "./repositories/mongo.js";
 
 function originMatchesPattern(origin, pattern) {
   if (pattern === "*") {
@@ -53,7 +54,14 @@ export function createApp() {
   });
 
   app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok" });
+    const mongoConnected = isMongoConnected();
+
+    res.json({
+      status: "ok",
+      databaseProvider: config.databaseProvider,
+      storageMode: mongoConnected ? "mongo" : "file",
+      mongoConnected
+    });
   });
 
   app.use("/api/meta", metaRoutes);
