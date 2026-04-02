@@ -1,0 +1,49 @@
+import cors from "cors";
+import express from "express";
+import { config } from "./config/env.js";
+import authRoutes from "./routes/auth.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import learnRoutes from "./routes/learn.routes.js";
+import metaRoutes from "./routes/meta.routes.js";
+import questionsRoutes from "./routes/questions.routes.js";
+import testsRoutes from "./routes/tests.routes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+
+export function createApp() {
+  const app = express();
+
+  app.use(
+    cors({
+      origin(origin, callback) {
+        if (!origin || config.corsOrigins.includes(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error(`Origin ${origin} is not allowed by CORS.`));
+      },
+      credentials: true
+    })
+  );
+  app.use(express.json());
+
+  app.get("/", (_req, res) => {
+    res.type("text/plain").send(
+      "Summit Prep backend is running.\nOpen the frontend at http://localhost:5173\nAPI health: http://localhost:4000/api/health"
+    );
+  });
+
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok" });
+  });
+
+  app.use("/api/meta", metaRoutes);
+  app.use("/api/auth", authRoutes);
+  app.use("/api/questions", questionsRoutes);
+  app.use("/api/tests", testsRoutes);
+  app.use("/api/learn", learnRoutes);
+  app.use("/api/dashboard", dashboardRoutes);
+  app.use(errorHandler);
+
+  return app;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "summit-prep-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "build": "node --check src/index.js",
+    "check": "node --check src/index.js",
+    "check:mongo": "node src/scripts/check-mongo.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.2",
+    "openai": "^5.12.2"
+  }
+}

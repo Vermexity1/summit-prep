@@ -1,0 +1,17 @@
+{
+  "name": "summit-prep",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run start --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "start": "npm run start --workspace frontend",
+    "start:api": "npm run start --workspace backend"
+  },
+  "dependencies": {
+    "mongodb": "^7.1.1"
+  }
+}
