@@ -156,7 +156,9 @@ export async function verifyFirebaseToken(token) {
   try {
     const decoded = await adminAuth.verifyIdToken(token);
     return decoded;
-  } catch {
+  } catch (error) {
+    console.warn("Firebase token verification failed.");
+    console.warn(error.code || error.message);
     return null;
   }
 }

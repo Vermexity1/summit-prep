@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import { config } from "./config/env.js";
+import { config, isFirebaseEnabled } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import learnRoutes from "./routes/learn.routes.js";
@@ -63,7 +63,10 @@ export function createApp() {
       storageMode: mongoConnected ? "mongo" : "file",
       mongoConnected,
       mongoDatabaseName: mongoInfo.databaseName,
-      mongoHost: mongoInfo.host
+      mongoHost: mongoInfo.host,
+      authProvider: config.authProvider,
+      firebaseEnabled: isFirebaseEnabled,
+      firebaseProjectId: config.firebase.projectId || ""
     });
   });
 
