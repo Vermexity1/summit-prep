@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, loginAsDemo, user, loading } = useAuth();
+  const { authMode, login, loginAsDemo, signInWithGoogle, user, loading } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -45,6 +45,20 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogle = async () => {
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await signInWithGoogle();
+      navigate("/dashboard");
+    } catch (nextError) {
+      setError(nextError.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (!loading && user) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -76,6 +90,11 @@ export default function LoginPage() {
         <button className="primary-button" type="submit" disabled={submitting}>
           {submitting ? "Signing in..." : "Log in"}
         </button>
+        {authMode === "firebase" ? (
+          <button className="secondary-button" type="button" onClick={handleGoogle} disabled={submitting}>
+            Continue with Google
+          </button>
+        ) : null}
         <button className="ghost-button" type="button" onClick={handleDemo} disabled={submitting}>
           Use demo account
         </button>

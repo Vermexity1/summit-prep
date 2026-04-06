@@ -275,7 +275,11 @@ const dataInterpretationSets = [
   }
 ];
 
-const QUESTION_BANK_VARIANTS_PER_DIFFICULTY = 25;
+const BASE_VARIANT_COUNTS = {
+  easy: 30,
+  medium: 45
+};
+const HARD_EXTENSION_COUNT = 2000;
 
 function createBaseQuestion(template, details) {
   return {
@@ -456,9 +460,9 @@ const templates = [
         examType,
         difficulty,
         year,
-        prompt: `One solution to ${a}x^2 + ${middle}x ${constant >= 0 ? "+" : "-"} ${Math.abs(
-          constant
-        )} = 0 is`,
+        prompt: `What is the positive solution to ${a}x^2 + ${middle}x ${
+          constant >= 0 ? "+" : "-"
+        } ${Math.abs(constant)} = 0?`,
         choices: shuffle([
           { id: "A", text: String(root2) },
           { id: "B", text: String(root1) },
@@ -470,7 +474,7 @@ const templates = [
         explanationSteps: [
           `Factor the quadratic as ${a}(x + ${b})(x - ${c}) = 0.`,
           "Set each factor equal to zero.",
-          `The solutions are x = ${root1} and x = ${root2}, so one valid answer is ${root2}.`
+          `The solutions are x = ${root1} and x = ${root2}, so the positive solution is ${root2}.`
         ],
         bestApproach: "Factoring"
       });
@@ -1577,15 +1581,27 @@ function cloneQuestion(question) {
   };
 }
 
+function getQuestionSignature(question) {
+  const choiceSignature = (question.choices || []).map((choice) => choice.text).join("|");
+
+  return [
+    question.section,
+    question.type,
+    question.prompt,
+    question.passage || "",
+    choiceSignature,
+    question.answerFormat
+  ].join("::");
+}
+
 function buildQuestionBank() {
   const examTypes = ["SAT", "PSAT"];
-  const difficulties = ["easy", "medium", "hard"];
   const bank = [];
 
   examTypes.forEach((examType) => {
     templates.forEach((template) => {
-      difficulties.forEach((difficulty) => {
-        for (let index = 0; index < QUESTION_BANK_VARIANTS_PER_DIFFICULTY; index += 1) {
+      Object.entries(BASE_VARIANT_COUNTS).forEach(([difficulty, count]) => {
+        for (let index = 0; index < count; index += 1) {
           bank.push(
             template.build({
               examType,
@@ -1601,7 +1617,43 @@ function buildQuestionBank() {
   return bank;
 }
 
-const QUESTION_BANK = buildQuestionBank();
+function buildHardExtensionBank() {
+  const examTypes = ["SAT", "PSAT"];
+  const bank = [];
+  const signatures = new Set();
+  let index = 0;
+  let attempts = 0;
+  const maxAttempts = HARD_EXTENSION_COUNT * 80;
+
+  while (bank.length < HARD_EXTENSION_COUNT && attempts < maxAttempts) {
+    const examType = examTypes[index % examTypes.length];
+    const template = templates[index % templates.length];
+    const question = template.build({
+      examType,
+      difficulty: "hard",
+      year: choice(TEST_YEARS)
+    });
+    const signature = getQuestionSignature(question);
+
+    if (!signatures.has(signature)) {
+      signatures.add(signature);
+      bank.push(question);
+    }
+
+    index += 1;
+    attempts += 1;
+  }
+
+  if (bank.length !== HARD_EXTENSION_COUNT) {
+    throw new Error(
+      `Expected ${HARD_EXTENSION_COUNT} unique hard questions, but generated ${bank.length}.`
+    );
+  }
+
+  return bank;
+}
+
+const QUESTION_BANK = [...buildQuestionBank(), ...buildHardExtensionBank()];
 
 export function getQuestionTemplates(filters = {}) {
   return templates.filter((template) => {
@@ -1646,6 +1698,52 @@ export function getQuestionBankStats() {
       math: QUESTION_BANK.filter((question) => question.section === "math").length,
       reading: QUESTION_BANK.filter((question) => question.section === "reading").length,
       writing: QUESTION_BANK.filter((question) => question.section === "writing").length
+    },
+    byDifficulty: {
+      easy: QUESTION_BANK.filter((question) => question.difficulty === "easy").length,
+      medium: QUESTION_BANK.filter((question) => question.difficulty === "medium").length,
+      hard: QUESTION_BANK.filter((question) => question.difficulty === "hard").length
+    },
+    hardExtensionCount: HARD_EXTENSION_COUNT
+  };
+}
+
+export function getQuestionSignatureForTesting(question) {
+  return getQuestionSignature(question);
+}
+
+export function getHardQuestionBank(filters = {}) {
+  return QUESTION_BANK.filter((question) => {
+    if (question.difficulty !== "hard") {
+      return false;
+    }
+
+    if (filters.examType && question.examType !== filters.examType) {
+      return false;
+    }
+
+    if (filters.section && question.section !== filters.section) {
+      return false;
+    }
+
+    if (filters.type && question.type !== filters.type) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+export function getHardQuestionBankStats() {
+  const hardQuestions = getHardQuestionBank();
+
+  return {
+    total: hardQuestions.length,
+    unique: new Set(hardQuestions.map((question) => getQuestionSignature(question))).size,
+    bySection: {
+      math: hardQuestions.filter((question) => question.section === "math").length,
+      reading: hardQuestions.filter((question) => question.section === "reading").length,
+      writing: hardQuestions.filter((question) => question.section === "writing").length
     }
   };
 }

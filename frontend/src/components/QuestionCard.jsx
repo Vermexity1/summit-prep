@@ -58,7 +58,7 @@ export default function QuestionCard({
       </button>
 
       {result ? (
-        <section className={`review-card ${result.correct ? "correct" : "incorrect"}`}>
+        <section className={`review-card ${result.correct ? "correct" : "incorrect"}`} aria-live="polite">
           <h4>{result.correct ? "Correct" : "Not quite yet"}</h4>
           <p>
             <strong>Correct answer:</strong> {result.correctAnswer}

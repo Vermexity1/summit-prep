@@ -1,5 +1,9 @@
 import { EXAM_BLUEPRINTS, TEST_YEARS } from "../data/seed/catalog.js";
-import { getQuestionBank, getQuestionTemplates } from "../data/seed/questions.js";
+import {
+  getHardQuestionBank,
+  getQuestionSignatureForTesting,
+  getQuestionTemplates
+} from "../data/seed/questions.js";
 import { addTestResult, getMockTest, saveMockTest } from "./data.service.js";
 import { isAnswerCorrect, resolveCorrectAnswerText, stripAnswerFields } from "./question.service.js";
 import {
@@ -8,50 +12,71 @@ import {
   createId,
   normalizeAnswer,
   round,
-  sampleWithoutReplacement,
   shuffle
 } from "../utils/helpers.js";
 
-function getDifficulty(index, total) {
-  const ratio = index / total;
-
-  if (ratio < 0.3) {
-    return "easy";
-  }
-
-  if (ratio < 0.75) {
-    return "medium";
-  }
-
-  return "hard";
+function getQuestionSignature(question) {
+  return getQuestionSignatureForTesting(question);
 }
 
-function buildSectionQuestions(section, count, examType) {
-  const difficulties = Array.from({ length: count }, (_item, index) => getDifficulty(index, count));
-  const questions = difficulties.map((difficulty) => {
-    const bankMatches = getQuestionBank({ examType, section, difficulty });
+function cloneBankQuestion(question) {
+  const year = choice(TEST_YEARS);
 
-    if (bankMatches.length) {
-      const year = choice(TEST_YEARS);
-      return {
-        ...JSON.parse(JSON.stringify(choice(bankMatches))),
-        id: createId("q"),
-        year,
-        sourceLabel: `Original Summit Prep practice set (${year})`
-      };
+  return {
+    ...JSON.parse(JSON.stringify(question)),
+    id: createId("q"),
+    year,
+    sourceLabel: `Original Summit Prep practice set (${year})`
+  };
+}
+
+function buildTemplateQuestion(section, examType, difficulty, usedSignatures) {
+  const templates = shuffle(getQuestionTemplates({ section }));
+
+  for (const template of templates) {
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const question = template.build({
+        examType,
+        difficulty,
+        year: choice(TEST_YEARS)
+      });
+      const signature = getQuestionSignature(question);
+
+      if (!usedSignatures.has(signature)) {
+        usedSignatures.add(signature);
+        return question;
+      }
+    }
+  }
+
+  const fallbackTemplate = choice(getQuestionTemplates({ section }));
+  const question = fallbackTemplate.build({
+    examType,
+    difficulty,
+    year: choice(TEST_YEARS)
+  });
+  usedSignatures.add(getQuestionSignature(question));
+  return question;
+}
+
+function buildSectionQuestions(section, count, examType, usedSignatures) {
+  const difficulty = "hard";
+  const hardBankMatches = shuffle(getHardQuestionBank({ examType, section }));
+
+  return Array.from({ length: count }, () => {
+    const uniqueBankMatches = hardBankMatches.filter((question) => {
+      const signature = getQuestionSignature(question);
+      return !usedSignatures.has(signature);
+    });
+
+    if (uniqueBankMatches.length) {
+      const selected = cloneBankQuestion(uniqueBankMatches[0]);
+      usedSignatures.add(getQuestionSignature(selected));
+      return selected;
     }
 
-    const templates = getQuestionTemplates({ section });
-    const template = choice(templates);
-
-    return template.build({
-      examType,
-      difficulty,
-      year: choice(TEST_YEARS)
-    });
+    return buildTemplateQuestion(section, examType, difficulty, usedSignatures);
   });
-
-  return sampleWithoutReplacement(questions, count);
 }
 
 function scaleScore(raw, total, [min, max]) {
@@ -92,9 +117,20 @@ function buildPublicTest(test) {
 
 export async function createMockTest({ userId, examType = "SAT" }) {
   const blueprint = EXAM_BLUEPRINTS[examType] || EXAM_BLUEPRINTS.SAT;
-  const readingQuestions = buildSectionQuestions("reading", blueprint.readingCount, examType);
-  const writingQuestions = buildSectionQuestions("writing", blueprint.writingCount, examType);
-  const mathQuestions = buildSectionQuestions("math", blueprint.mathCount, examType);
+  const usedSignatures = new Set();
+  const readingQuestions = buildSectionQuestions(
+    "reading",
+    blueprint.readingCount,
+    examType,
+    usedSignatures
+  );
+  const writingQuestions = buildSectionQuestions(
+    "writing",
+    blueprint.writingCount,
+    examType,
+    usedSignatures
+  );
+  const mathQuestions = buildSectionQuestions("math", blueprint.mathCount, examType, usedSignatures);
   const questions = [...readingQuestions, ...writingQuestions, ...mathQuestions];
 
   const test = {

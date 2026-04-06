@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api/client";
-import { firebaseLogin, firebaseLogout, firebaseRegister } from "./firebaseClient";
+import {
+  firebaseLogin,
+  firebaseLoginWithGoogle,
+  firebaseLogout,
+  firebaseRegister
+} from "./firebaseClient";
 
 const AUTH_MODE = import.meta.env.VITE_AUTH_MODE || "local";
 const TOKEN_KEY = "summit-prep-token";
@@ -100,6 +105,17 @@ export function AuthProvider({ children }) {
     return result.user;
   };
 
+  const signInWithGoogle = async () => {
+    if (AUTH_MODE !== "firebase") {
+      throw new Error("Google sign-in is available only when Firebase auth mode is enabled.");
+    }
+
+    const firebaseSession = await firebaseLoginWithGoogle();
+    const { user: profile } = await api.get("/auth/me", firebaseSession.token);
+    saveSession(firebaseSession.token, profile);
+    return profile;
+  };
+
   const loginAsDemo = () =>
     login({
       email: "demo@summitprep.dev",
@@ -129,6 +145,7 @@ export function AuthProvider({ children }) {
         loading,
         register,
         login,
+        signInWithGoogle,
         loginAsDemo,
         logout,
         refreshProfile

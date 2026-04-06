@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register, user, loading } = useAuth();
+  const { authMode, register, signInWithGoogle, user, loading } = useAuth();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -28,6 +28,20 @@ export default function RegisterPage() {
 
     try {
       await register(form);
+      navigate("/dashboard");
+    } catch (nextError) {
+      setError(nextError.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await signInWithGoogle();
       navigate("/dashboard");
     } catch (nextError) {
       setError(nextError.message);
@@ -81,6 +95,11 @@ export default function RegisterPage() {
         <button className="primary-button" type="submit" disabled={submitting}>
           {submitting ? "Creating account..." : "Create account"}
         </button>
+        {authMode === "firebase" ? (
+          <button className="secondary-button" type="button" onClick={handleGoogle} disabled={submitting}>
+            Sign up with Google
+          </button>
+        ) : null}
 
         <p className="muted-text">
           Already registered? <Link to="/login">Log in here</Link>.

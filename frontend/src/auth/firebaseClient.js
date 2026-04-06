@@ -2,12 +2,15 @@ import { initializeApp } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile
 } from "firebase/auth";
 
 let firebaseAuth = null;
+let googleProvider = null;
 
 function getFirebaseConfig() {
   return {
@@ -31,6 +34,18 @@ export function getFirebaseAuthClient() {
   const app = initializeApp(config);
   firebaseAuth = getAuth(app);
   return firebaseAuth;
+}
+
+function getGoogleProvider() {
+  if (googleProvider) {
+    return googleProvider;
+  }
+
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({
+    prompt: "select_account"
+  });
+  return googleProvider;
 }
 
 export async function firebaseRegister({ name, email, password }) {
@@ -59,8 +74,18 @@ export async function firebaseLogin({ email, password }) {
   };
 }
 
+export async function firebaseLoginWithGoogle() {
+  const auth = getFirebaseAuthClient();
+  const credential = await signInWithPopup(auth, getGoogleProvider());
+  const token = await credential.user.getIdToken();
+
+  return {
+    token,
+    user: credential.user
+  };
+}
+
 export async function firebaseLogout() {
   const auth = getFirebaseAuthClient();
   await signOut(auth);
 }
-

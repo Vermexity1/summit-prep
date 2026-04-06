@@ -51,7 +51,7 @@ export default function MockTestsPage() {
   };
 
   const submitTest = async () => {
-    if (!test) {
+    if (!test || currentIndex !== test.questions.length - 1) {
       return;
     }
 
@@ -75,6 +75,7 @@ export default function MockTestsPage() {
   };
 
   const currentQuestion = test?.questions[currentIndex];
+  const isLastQuestion = Boolean(test) && currentIndex === test.questions.length - 1;
 
   return (
     <div className="stack-lg">
@@ -185,10 +186,17 @@ export default function MockTestsPage() {
                 >
                   Next
                 </button>
-                <button className="primary-button" onClick={submitTest} disabled={loading}>
-                  {loading ? "Scoring..." : "Submit mock test"}
-                </button>
+                {isLastQuestion ? (
+                  <button className="primary-button" onClick={submitTest} disabled={loading}>
+                    {loading ? "Scoring..." : "Submit mock test"}
+                  </button>
+                ) : null}
               </div>
+              {!isLastQuestion ? (
+                <p className="test-submit-note">
+                  Review questions freely, but final submission unlocks only on the last question.
+                </p>
+              ) : null}
               {error ? <p className="form-error">{error}</p> : null}
 
               <div className="question-index-grid">

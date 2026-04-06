@@ -88,7 +88,7 @@ To make the project runnable immediately without extra setup:
 Optional integrations:
 
 - OpenAI: set `AI_MODE=openai` and `OPENAI_API_KEY`
-- Firebase Auth: install `firebase-admin` in `backend`, set frontend and backend Firebase env vars, and switch auth mode to `firebase`
+- Firebase Auth and Google sign-in: install `firebase-admin` in `backend`, set frontend and backend Firebase env vars, enable the Google provider in Firebase Auth, and switch auth mode to `firebase`
 - MongoDB: set `DATABASE_PROVIDER=mongodb` and `MONGODB_URI`
 - To import old local accounts and history from the JSON store into MongoDB, run `npm run migrate:mongo --workspace backend`
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -24,6 +24,7 @@ export default function PracticePage() {
   const [submitting, setSubmitting] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const [error, setError] = useState("");
+  const generatedQuestionRef = useRef(null);
 
   useEffect(() => {
     async function loadCatalog() {
@@ -43,6 +44,17 @@ export default function PracticePage() {
       type: searchParams.get("type") || ""
     }));
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!question) {
+      return;
+    }
+
+    generatedQuestionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, [question]);
 
   const sectionTypes = catalog?.[filters.section] || [];
   const filteredOfficialResources =
@@ -176,8 +188,8 @@ export default function PracticePage() {
             <span>Difficulty</span>
             <select name="difficulty" value={filters.difficulty} onChange={updateFilter}>
               <option value="hard">Exam-level</option>
-              <option value="medium">Standard</option>
-              <option value="easy">Easy</option>
+              <option value="medium">Core practice</option>
+              <option value="easy">Foundations</option>
             </select>
           </label>
         </div>
@@ -186,6 +198,18 @@ export default function PracticePage() {
           {generating ? "Generating..." : "Generate question"}
         </button>
         {error ? <p className="form-error">{error}</p> : null}
+      </section>
+
+      <section ref={generatedQuestionRef} className="practice-question-stage" aria-live="polite">
+        <QuestionCard
+          question={question}
+          answer={answer}
+          onAnswerChange={setAnswer}
+          onSubmit={submitAnswer}
+          onGenerateMore={generateQuestion}
+          submitting={submitting}
+          result={result}
+        />
       </section>
 
       <section className="two-column-grid practice-support-grid">
@@ -203,8 +227,9 @@ export default function PracticePage() {
             <div className="coach-note">
               <strong>{questionBankStats?.total || "Many"} locally seeded question variants.</strong>
               <p className="muted-text">
-                The app now prebuilds a large local bank across Math, Reading, and Writing so each
-                category has many more question variations to pull from.
+                The app now prebuilds a large local bank across Math, Reading, and Writing,
+                including {questionBankStats?.byDifficulty?.hard || "many"} dedicated exam-level
+                hard variants.
               </p>
             </div>
             <div className="coach-note">
@@ -239,16 +264,6 @@ export default function PracticePage() {
           </div>
         </article>
       </section>
-
-      <QuestionCard
-        question={question}
-        answer={answer}
-        onAnswerChange={setAnswer}
-        onSubmit={submitAnswer}
-        onGenerateMore={generateQuestion}
-        submitting={submitting}
-        result={result}
-      />
 
       {feedback ? (
         <section className="two-column-grid">
