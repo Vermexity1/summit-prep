@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import SocialAuthButton from "../components/SocialAuthButton";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { authMode, login, loginAsDemo, signInWithGoogle, user, loading } = useAuth();
+  const { login, loginAsDemo, signInWithGoogle, socialAuthEnabled, user, loading } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -90,11 +91,25 @@ export default function LoginPage() {
         <button className="primary-button" type="submit" disabled={submitting}>
           {submitting ? "Signing in..." : "Log in"}
         </button>
-        {authMode === "firebase" ? (
-          <button className="secondary-button" type="button" onClick={handleGoogle} disabled={submitting}>
-            Continue with Google
-          </button>
+
+        {socialAuthEnabled ? (
+          <>
+            <div className="auth-divider">
+              <span>or use a one-click sign-in</span>
+            </div>
+
+            <div className="social-auth-stack">
+              <SocialAuthButton
+                provider="google"
+                title="Continue with Google"
+                description="Open a Google popup and jump straight back into your study plan."
+                onClick={handleGoogle}
+                disabled={submitting}
+              />
+            </div>
+          </>
         ) : null}
+
         <button className="ghost-button" type="button" onClick={handleDemo} disabled={submitting}>
           Use demo account
         </button>

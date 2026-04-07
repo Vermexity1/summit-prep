@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api/client";
 import {
-  firebaseLogin,
   firebaseLoginWithGoogle,
   firebaseLogout,
-  firebaseRegister
+  isFirebaseClientConfigured
 } from "./firebaseClient";
 
 const AUTH_MODE = import.meta.env.VITE_AUTH_MODE || "local";
+const SOCIAL_AUTH_ENABLED = AUTH_MODE === "firebase" && isFirebaseClientConfigured();
 const TOKEN_KEY = "summit-prep-token";
 const USER_KEY = "summit-prep-user";
 
@@ -46,6 +46,12 @@ export function AuthProvider({ children }) {
     return profile;
   };
 
+  const completeSocialSignIn = async (firebaseSession) => {
+    const { user: profile } = await api.get("/auth/me", firebaseSession.token);
+    saveSession(firebaseSession.token, profile);
+    return profile;
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -79,41 +85,24 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   const register = async (values) => {
-    // Local auth is the zero-config path. Firebase can be turned on through env vars later.
-    if (AUTH_MODE === "firebase") {
-      const firebaseSession = await firebaseRegister(values);
-      const { user: profile } = await api.get("/auth/me", firebaseSession.token);
-      saveSession(firebaseSession.token, profile);
-      return profile;
-    }
-
     const result = await api.post("/auth/register", values);
     saveSession(result.token, result.user);
     return result.user;
   };
 
   const login = async (values) => {
-    if (AUTH_MODE === "firebase") {
-      const firebaseSession = await firebaseLogin(values);
-      const { user: profile } = await api.get("/auth/me", firebaseSession.token);
-      saveSession(firebaseSession.token, profile);
-      return profile;
-    }
-
     const result = await api.post("/auth/login", values);
     saveSession(result.token, result.user);
     return result.user;
   };
 
   const signInWithGoogle = async () => {
-    if (AUTH_MODE !== "firebase") {
-      throw new Error("Google sign-in is available only when Firebase auth mode is enabled.");
+    if (!SOCIAL_AUTH_ENABLED) {
+      throw new Error("Google sign-in is not configured for this environment yet.");
     }
 
     const firebaseSession = await firebaseLoginWithGoogle();
-    const { user: profile } = await api.get("/auth/me", firebaseSession.token);
-    saveSession(firebaseSession.token, profile);
-    return profile;
+    return completeSocialSignIn(firebaseSession);
   };
 
   const loginAsDemo = () =>
@@ -124,13 +113,19 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      if (AUTH_MODE === "firebase") {
-        await firebaseLogout();
-      } else if (token) {
+      if (token) {
         await api.post("/auth/logout", {}, token);
       }
     } catch {
-      // Clearing local session is enough for demo mode.
+      // Clearing local session is enough if the backend token is already gone.
+    }
+
+    try {
+      if (SOCIAL_AUTH_ENABLED) {
+        await firebaseLogout();
+      }
+    } catch {
+      // Clearing the local session keeps the UI consistent even if Firebase is already signed out.
     } finally {
       clearSession();
     }
@@ -139,7 +134,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        authMode: AUTH_MODE,
+        authMode: SOCIAL_AUTH_ENABLED ? "hybrid" : "local",
+        socialAuthEnabled: SOCIAL_AUTH_ENABLED,
         token,
         user,
         loading,

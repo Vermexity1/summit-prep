@@ -262,16 +262,15 @@ export default function MockTestsPage() {
 
           <section className="panel">
             <p className="eyebrow">Review</p>
-            <h2>Incorrect questions and explanations</h2>
+            <h2>Full question review</h2>
             <div className="stack-sm">
-              {result.questionReviews
-                .filter((review) => !review.correct)
-                .slice(0, 12)
-                .map((review) => (
-                  <article key={review.id} className="review-card incorrect">
+              {result.questionReviews.map((review, index) => (
+                  <article key={review.id} className={`review-card ${review.correct ? "correct" : "incorrect"}`}>
                     <div className="question-meta">
+                      <span>Question {index + 1}</span>
                       <span>{review.section}</span>
                       <span>{review.typeLabel}</span>
+                      <span>{review.correct ? "Correct" : "Needs work"}</span>
                     </div>
                     {review.passage ? <pre className="passage-block">{review.passage}</pre> : null}
                     <h3>{review.prompt}</h3>

@@ -42,8 +42,8 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(27, 111, 107, 0.45);
-  outline-offset: 3px;
+  outline: 2px solid rgba(27, 111, 107, 0.4);
+  outline-offset: 2px;
 }
 
 button {
@@ -388,6 +388,116 @@ p {
   width: min(520px, 100%);
   display: grid;
   gap: 1rem;
+}
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.auth-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(18, 52, 73, 0.12);
+}
+
+.auth-divider span {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.8rem;
+  background: var(--surface);
+}
+
+.social-auth-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.social-auth-button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(18, 52, 73, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 245, 237, 0.96));
+  box-shadow: 0 16px 32px rgba(18, 52, 73, 0.08);
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.social-auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px rgba(18, 52, 73, 0.12);
+}
+
+.social-auth-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
+.social-auth-button-google {
+  border-color: rgba(66, 133, 244, 0.2);
+}
+
+.social-auth-logo {
+  width: 2.9rem;
+  height: 2.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: white;
+  box-shadow: inset 0 0 0 1px rgba(18, 52, 73, 0.08);
+}
+
+.social-auth-logo svg {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.social-auth-copy {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.social-auth-copy strong {
+  color: var(--navy);
+  font-size: 0.98rem;
+}
+
+.social-auth-copy small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.social-auth-provider-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.social-auth-button-google .social-auth-provider-tag {
+  background: rgba(66, 133, 244, 0.1);
+  color: #174ea6;
 }
 
 .form-error {
@@ -754,6 +864,15 @@ p {
   }
 
   .choice-pill input {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .social-auth-button {
+    grid-template-columns: auto 1fr;
+  }
+
+  .social-auth-provider-tag {
     grid-column: 1 / -1;
     justify-self: start;
   }

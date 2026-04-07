@@ -10,7 +10,7 @@ It ships with:
 - Learn mode with strategy guides and worked examples
 - Adaptive weakness tracking and targeted recommendations
 - A progress dashboard with trends, mastery, and time tracking
-- Local demo authentication out of the box, plus optional Firebase Auth support
+- Local demo authentication out of the box, plus optional Firebase social sign-in support
 - Local file-backed persistence out of the box, plus optional MongoDB support
 
 ## Quick Start
@@ -88,7 +88,7 @@ To make the project runnable immediately without extra setup:
 Optional integrations:
 
 - OpenAI: set `AI_MODE=openai` and `OPENAI_API_KEY`
-- Firebase Auth and Google sign-in: install `firebase-admin` in `backend`, set frontend and backend Firebase env vars, enable the Google provider in Firebase Auth, and switch auth mode to `firebase`
+- Firebase social sign-in: set frontend and backend Firebase env vars, enable the Google provider in Firebase Auth, and switch `VITE_AUTH_MODE` to `firebase` so the Google button appears while email/password auth stays local
 - MongoDB: set `DATABASE_PROVIDER=mongodb` and `MONGODB_URI`
 - To import old local accounts and history from the JSON store into MongoDB, run `npm run migrate:mongo --workspace backend`
 

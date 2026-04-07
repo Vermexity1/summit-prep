@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import SocialAuthButton from "../components/SocialAuthButton";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { authMode, register, signInWithGoogle, user, loading } = useAuth();
+  const { register, signInWithGoogle, socialAuthEnabled, user, loading } = useAuth();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -95,10 +96,23 @@ export default function RegisterPage() {
         <button className="primary-button" type="submit" disabled={submitting}>
           {submitting ? "Creating account..." : "Create account"}
         </button>
-        {authMode === "firebase" ? (
-          <button className="secondary-button" type="button" onClick={handleGoogle} disabled={submitting}>
-            Sign up with Google
-          </button>
+
+        {socialAuthEnabled ? (
+          <>
+            <div className="auth-divider">
+              <span>or start with a social account</span>
+            </div>
+
+            <div className="social-auth-stack">
+              <SocialAuthButton
+                provider="google"
+                title="Sign up with Google"
+                description="Create your Summit Prep account with the Google profile you already use."
+                onClick={handleGoogle}
+                disabled={submitting}
+              />
+            </div>
+          </>
         ) : null}
 
         <p className="muted-text">

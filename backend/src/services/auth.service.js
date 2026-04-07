@@ -83,6 +83,13 @@ export async function registerLocalUser({ name, email, password, targetExam = "S
   const existingUser = await findUserByEmail(normalizedEmail);
 
   if (existingUser) {
+    if (!existingUser.passwordHash) {
+      throw createHttpError(
+        "This email is already linked to Google sign-in. Use the Google button on the login page.",
+        409
+      );
+    }
+
     throw createHttpError("An account with that email already exists.", 409);
   }
 
@@ -114,6 +121,13 @@ export async function loginLocalUser({ email, password }) {
 
   const normalizedEmail = email.toLowerCase();
   const user = await findUserByEmail(normalizedEmail);
+
+  if (user && !user.passwordHash) {
+    throw createHttpError(
+      "This email is linked to Google sign-in. Use the Google button instead of a password.",
+      401
+    );
+  }
 
   if (!user || !verifyPassword(password, user.passwordHash)) {
     throw createHttpError("Invalid email or password.", 401);

@@ -21,16 +21,21 @@ function getFirebaseConfig() {
   };
 }
 
+export function isFirebaseClientConfigured() {
+  const config = getFirebaseConfig();
+  return Boolean(config.apiKey && config.authDomain && config.projectId && config.appId);
+}
+
 export function getFirebaseAuthClient() {
   if (firebaseAuth) {
     return firebaseAuth;
   }
 
-  const config = getFirebaseConfig();
-  if (!config.apiKey || !config.authDomain || !config.projectId || !config.appId) {
+  if (!isFirebaseClientConfigured()) {
     throw new Error("Firebase auth is enabled, but the Firebase env vars are incomplete.");
   }
 
+  const config = getFirebaseConfig();
   const app = initializeApp(config);
   firebaseAuth = getAuth(app);
   return firebaseAuth;

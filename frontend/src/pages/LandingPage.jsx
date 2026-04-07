@@ -29,7 +29,7 @@ export default function LandingPage() {
 
   return (
     <div className="stack-lg">
-      <section className="hero-grid">
+      <section>
         <div className="hero-copy panel hero-panel">
           <p className="eyebrow">Local-first SAT training stack</p>
           <h1>Train like a serious test taker, not like you are clicking through flashcards.</h1>
@@ -51,16 +51,6 @@ export default function LandingPage() {
             <strong>Demo login:</strong> demo@summitprep.dev / demo1234
           </div>
         </div>
-
-        <aside className="hero-scoreboard panel accent-panel">
-          <div className="score-chip">Math + Reading + Writing</div>
-          <h2>Built for local testing right away</h2>
-          <ul className="feature-list">
-            <li>Local auth and seeded data work with no external services.</li>
-            <li>OpenAI, Firebase, and MongoDB can be enabled later with env vars.</li>
-            <li>Responsive layout supports desktop and mobile screens.</li>
-          </ul>
-        </aside>
       </section>
 
       <section className="card-grid">
